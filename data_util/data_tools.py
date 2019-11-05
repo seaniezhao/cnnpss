@@ -14,16 +14,19 @@ all_phn = get_all_phon()
 def process_wav(wav_path):
     y, osr = sf.read(wav_path)
 
+    if len(y.shape) > 1:
+        y = np.ascontiguousarray(y[:, 0])
+
     sr = sample_rate
     if osr != sr:
         y = librosa.resample(y, osr, sr)
 
     sf.write(wav_path, y, sample_rate)
 
-    # 使用harvest算法计算音频的基频F0
-    _f0, t = pw.harvest(y, sr, f0_floor=f0_min, f0_ceil=f0_max,
+    # 使用dio算法计算音频的基频F0
+    _f0, t = pw.dio(y, sr, f0_floor=f0_min, f0_ceil=f0_max,
                         frame_period=pw.default_frame_period)
-    #_f0 = pw.stonemask(y, _f0, t, sr)
+    _f0 = pw.stonemask(y, _f0, t, sr)
     _f0[_f0 > f0_max] = f0_max
 
     print(_f0.shape)
@@ -76,6 +79,7 @@ def process_phon_label(label_path):
 
 def make_timbre_model_condition(time_phon_list, f0):
     all_phon = get_all_phon()
+
 
     f0_mel = 1127*np.log(1+f0/700)
     f0_mel_min = 1127*np.log(1 + f0_min/700)
