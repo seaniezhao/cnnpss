@@ -207,16 +207,16 @@ def make_f0_condition(note_list, time_phon_list, frame_num=None):
         pre_phn, cur_phn, next_phn, pos_in_phon = (0, 0, 0, 0)
         for j in range(len(time_phon_list)):
             if time_phon_list[j][0] <= i < time_phon_list[j][1]:
-                cur_phn = get_phn_class(time_phon_list[j][2])
+                cur_phn = all_phon.index(time_phon_list[j][2])
                 if j == 0:
-                    pre_phn = 0
+                    pre_phn = all_phon.index('none')
                 else:
-                    pre_phn = get_phn_class(time_phon_list[j - 1][2])
+                    pre_phn = all_phon.index(time_phon_list[j - 1][2])
 
                 if j == len(time_phon_list) - 1:
-                    next_phn = 0
+                    next_phn = all_phon.index('none')
                 else:
-                    next_phn = get_phn_class(time_phon_list[j + 1][2])
+                    next_phn = all_phon.index(time_phon_list[j + 1][2])
 
                 begin = time_phon_list[j][0]
                 end = time_phon_list[j][1]

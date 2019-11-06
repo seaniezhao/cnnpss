@@ -34,15 +34,14 @@ def cal_para(out, temperature):
         use_t = True
         tempers = []
         for i in range(xi.shape[-1]):
-            if i<=3:
-                temper = 0.01
-            elif i>=8:
-                temper = 0.1
+            if i <= 3:
+                temper = 0.05
+            elif i >= 8:
+                temper = 0.5
             else:
-                temper = 0.01 + (i-3)*0.0225
+                temper = 0.05 + (i-3)*0.9
             tempers.append(temper)
 
-        #tempers = tempers[::-1]
         tempers = torch.Tensor(tempers)
         tempers = tempers.expand(xi.shape).cuda()
         # if temperature != 0.01 mean it is for harmonic so it will be piecewise linear
@@ -115,7 +114,7 @@ def CGM_loss(out, y):
 
 
 def sample_from_CGM(out, temperature=0.01):
-    temperature = 0.05
+
     out = out.unsqueeze(1)
     out = out.unsqueeze(0)
     sigmas, mus, ws = cal_para(out, temperature)
