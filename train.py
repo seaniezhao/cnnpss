@@ -95,6 +95,6 @@ def train_f0():
 
 if __name__ == '__main__':
     train_harmonic()
-    train_aperiodic()
+    #train_aperiodic()
     train_vuv()
     train_f0()

@@ -39,7 +39,7 @@ def cal_para(out, temperature):
             elif i >= 8:
                 temper = 0.5
             else:
-                temper = 0.05 + (i-3)*0.9
+                temper = 0.05 + (i-3)*0.09
             tempers.append(temper)
 
         tempers = torch.Tensor(tempers)

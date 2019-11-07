@@ -131,49 +131,122 @@ def make_test_wav(file_name, isTestDir=True, flag="flag"):
 
     [sp_min, sp_max, ap_min, ap_max] = np.load(os.path.join(DATA_ROOT_PATH, 'min_max_record.npy'))
 
-    f0_condi = get_f0_condition(file_name, isTestDir)
-    f0 = generate_f0(f0_condi, f0_max)
-
-    post_f0, midi_f0 = f0_post_process(file_name, f0)
-
+    # f0_condi = get_f0_condition(file_name, isTestDir)
+    # f0 = generate_f0(f0_condi, f0_max)
+    #
+    # post_f0, midi_f0 = f0_post_process(file_name, f0)
+    #
     c_path = os.path.join(DATA_ROOT_PATH, 'test' if isTestDir else 'train', 'f0', file_name + '_f0.npy')
     origin_f0 = np.load(c_path).astype(np.double) * f0_max
-
-    plt.title(file_name+' f0')
+    #
+    # #post_f0, midi_f0 = f0_post_process(file_name, origin_f0)
+    #
+    # plt.title(file_name+' f0')
     # plt.plot(f0, color='red')
     # plt.plot(post_f0, color='blue')
-    plt.plot(origin_f0, color='green')
-    plt.plot(midi_f0)
-    plt.show()
-    pass
+    # plt.plot(origin_f0, color='green')
+    # plt.plot(midi_f0, color='yellow')
+    # plt.show()
+
+    f0 = origin_f0
     # --------------------------------------------------------------------
 
-    # # condi = get_condition(file_name, isTestDir)
-    # condi = make_condition(file_name, f0)
-    # sp, raw_sp = generate_timbre(0, sp_max, sp_min, condi, None)
-    #
-    # # plt.imshow(np.log(np.transpose(sp)), aspect='auto', origin='bottom', interpolation='none')
-    # # plt.show()
-    #
-    # ap, raw_ap = generate_timbre(1, ap_max, ap_min, condi, raw_sp)
-    #
-    # # plt.imshow(np.log(np.transpose(ap)), aspect='auto', origin='bottom', interpolation='none')
-    # # plt.show()
-    #
-    # gen_cat = torch.cat((raw_ap, raw_sp), 0)
-    #
-    # vuv = generate_vuv(condi, gen_cat)
-    # # plt.plot(vuv)
-    # # plt.show()
-    #
-    # synthesized = pw.synthesize(f0*vuv, sp, ap, sample_rate, pw.default_frame_period)
-    # save_dir = os.path.join(GEN_PATH, flag)
-    # if not os.path.exists(save_dir):
-    #     os.makedirs(save_dir)
-    # sf.write(save_dir + '/' + file_name + '.wav', synthesized, sample_rate)
+    # condi = get_condition(file_name, isTestDir)
+    condi = make_condition(file_name, f0)
+    sp, raw_sp = generate_timbre(0, sp_max, sp_min, condi, None)
 
+    # plt.imshow(np.log(np.transpose(sp)), aspect='auto', origin='bottom', interpolation='none')
+    # plt.show()
+
+    ap, raw_ap = generate_timbre(1, ap_max, ap_min, condi, raw_sp)
+
+    # plt.imshow(np.log(np.transpose(ap)), aspect='auto', origin='bottom', interpolation='none')
+    # plt.show()
+
+    gen_cat = torch.cat((raw_ap, raw_sp), 0)
+
+    vuv = generate_vuv(condi, gen_cat)
+    # plt.plot(vuv)
+    # plt.show()
+
+    synthesized = pw.synthesize(f0*vuv, sp, ap, sample_rate, pw.default_frame_period)
+    save_dir = os.path.join(GEN_PATH, flag)
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    sf.write(save_dir + '/' + file_name + '.wav', synthesized, sample_rate)
+
+
+def test_world(file_name):
+    filepath = os.path.join(RAW_DATA_PATH, file_name+'.wav')
+
+    f0, _sp, code_sp, _ap, code_ap = process_wav(filepath)
+
+
+    synthesized = pw.synthesize(f0, _sp, _ap, sample_rate, pw.default_frame_period)
+    save_dir = os.path.join(GEN_PATH, flag)
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    sf.write(save_dir + '/' + file_name + '.wav', synthesized, sample_rate)
+
+
+
+def process_wav(wav_path):
+    import librosa
+    from data_util.sp_code import code_harmonic
+    y, osr = sf.read(wav_path)
+
+    if len(y.shape) > 1:
+        y = np.ascontiguousarray(y[:, 0])
+
+    sr = sample_rate
+    if osr != sr:
+        y = librosa.resample(y, osr, sr)
+
+    sf.write(wav_path, y, sample_rate)
+
+    # 使用harvest算法计算音频的基频F0
+    _f01, t = pw.dio(y, sr, f0_floor=f0_min, f0_ceil=f0_max,
+                        frame_period=pw.default_frame_period)
+    _f0 = pw.stonemask(y, _f01, t, sr)
+
+    post_f0, midi_f0 = f0_post_process(file_name, _f0)
+
+    _f02, t1 = pw.harvest(y, sr, f0_floor=f0_min, f0_ceil=f0_max,
+                     frame_period=pw.default_frame_period)
+
+
+    plt.title(file_name+' f0')
+    plt.plot(_f01, color='red')
+    plt.plot(post_f0, color='blue')
+    plt.plot(_f02, color='green')
+    plt.plot(_f0, color='yellow')
+    plt.plot(midi_f0, color='black')
+    plt.show()
+
+
+
+    _f0[_f0 > f0_max] = f0_max
+
+    print(_f0.shape)
+
+    # 使用CheapTrick算法计算音频的频谱包络
+    _sp = pw.cheaptrick(y, post_f0, t, sr)
+
+    code_sp = code_harmonic(_sp, 60)
+    print(_sp.shape, code_sp.shape)
+    # 计算aperiodic参数
+    _ap = pw.d4c(y, post_f0, t, sr)
+
+    code_ap = pw.code_aperiodicity(_ap, sr)
+    print(_ap.shape, code_ap.shape)
+
+    return post_f0, _sp, code_sp, _ap, code_ap
 
 if __name__ == '__main__':
+
+
+    make_test_wav('45shexi5', isTestDir=False, flag="one_sample_test")
+    exit()
     condi_names = os.listdir(os.path.join(DATA_ROOT_PATH, 'test/condition'))
     file_name_list = []
     for item in condi_names:
@@ -185,3 +258,4 @@ if __name__ == '__main__':
     flag = time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())
     for file_name in file_name_list:
         make_test_wav(file_name, isTestDir=isTestDir, flag=flag)
+        #test_world(file_name)
