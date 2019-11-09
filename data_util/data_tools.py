@@ -15,7 +15,7 @@ def process_wav(wav_path):
     y, osr = sf.read(wav_path)
 
     if len(y.shape) > 1:
-        y = np.ascontiguousarray(y[:, 0])
+        y = np.ascontiguousarray((y[:, 0]+y[:, 1])/2)
 
     sr = sample_rate
     if osr != sr:

@@ -106,7 +106,6 @@ def get_condition(file_name,  isTestDir=True):
 def make_condition(file_name, f0):
     txt_path = os.path.join(RAW_DATA_PATH, file_name + '.TextGrid')
     time_phon_list, _ = process_phon_label(txt_path)
-    f0 = f0 / f0_max
     condition = make_timbre_model_condition(time_phon_list, f0)
     return torch.Tensor(condition).transpose(0, 1)
 
@@ -131,24 +130,24 @@ def make_test_wav(file_name, isTestDir=True, flag="flag"):
 
     [sp_min, sp_max, ap_min, ap_max] = np.load(os.path.join(DATA_ROOT_PATH, 'min_max_record.npy'))
 
-    # f0_condi = get_f0_condition(file_name, isTestDir)
-    # f0 = generate_f0(f0_condi, f0_max)
-    #
-    # post_f0, midi_f0 = f0_post_process(file_name, f0)
-    #
+    f0_condi = get_f0_condition(file_name, isTestDir)
+    f0 = generate_f0(f0_condi, f0_max)
+
+    post_f0, midi_f0 = f0_post_process(file_name, f0)
+
     c_path = os.path.join(DATA_ROOT_PATH, 'test' if isTestDir else 'train', 'f0', file_name + '_f0.npy')
     origin_f0 = np.load(c_path).astype(np.double) * f0_max
-    #
-    # #post_f0, midi_f0 = f0_post_process(file_name, origin_f0)
-    #
-    # plt.title(file_name+' f0')
-    # plt.plot(f0, color='red')
-    # plt.plot(post_f0, color='blue')
-    # plt.plot(origin_f0, color='green')
-    # plt.plot(midi_f0, color='yellow')
-    # plt.show()
 
-    f0 = origin_f0
+    #post_f0, midi_f0 = f0_post_process(file_name, origin_f0)
+
+    plt.title(file_name+' f0')
+    plt.plot(f0, color='red')
+    plt.plot(post_f0, color='blue')
+    plt.plot(origin_f0, color='green')
+    plt.plot(midi_f0, color='yellow')
+    plt.show()
+
+    f0 = post_f0
     # --------------------------------------------------------------------
 
     # condi = get_condition(file_name, isTestDir)
@@ -244,9 +243,6 @@ def process_wav(wav_path):
 
 if __name__ == '__main__':
 
-
-    make_test_wav('45shexi5', isTestDir=False, flag="one_sample_test")
-    exit()
     condi_names = os.listdir(os.path.join(DATA_ROOT_PATH, 'test/condition'))
     file_name_list = []
     for item in condi_names:
