@@ -135,27 +135,32 @@ def make_test_wav(file_name, isTestDir=True, flag="flag"):
 
     post_f0, midi_f0 = f0_post_process(file_name, f0)
 
-    c_path = os.path.join(DATA_ROOT_PATH, 'test' if isTestDir else 'train', 'f0', file_name + '_f0.npy')
-    origin_f0 = np.load(c_path).astype(np.double) * f0_max
+    # c_path = os.path.join(DATA_ROOT_PATH, 'test' if isTestDir else 'train', 'f0', file_name + '_f0.npy')
+    # origin_f0 = np.load(c_path).astype(np.double) * f0_max
+    #
+    # post_f0, midi_f0 = f0_post_process(file_name, origin_f0)
 
-    #post_f0, midi_f0 = f0_post_process(file_name, origin_f0)
-
-    plt.title(file_name+' f0')
-    plt.plot(f0, color='red')
-    plt.plot(post_f0, color='blue')
-    plt.plot(origin_f0, color='green')
-    plt.plot(midi_f0, color='yellow')
-    plt.show()
+    # plt.title(file_name+' f0')
+    # plt.plot(f0, color='red')
+    # plt.plot(post_f0, color='blue')
+    # plt.plot(origin_f0, color='green')
+    # plt.plot(midi_f0, color='yellow')
+    # plt.show()
 
     f0 = post_f0
     # --------------------------------------------------------------------
+    filepath = os.path.join(RAW_DATA_PATH, file_name+'.wav')
+    _f0, _sp, code_sp, _ap, code_ap = process_wav(filepath)
+
 
     # condi = get_condition(file_name, isTestDir)
     condi = make_condition(file_name, f0)
     sp, raw_sp = generate_timbre(0, sp_max, sp_min, condi, None)
 
-    # plt.imshow(np.log(np.transpose(sp)), aspect='auto', origin='bottom', interpolation='none')
-    # plt.show()
+    plt.imshow(np.log(np.transpose(sp)), aspect='auto', origin='bottom', interpolation='none')
+    plt.show()
+    plt.imshow(np.log(np.transpose(_sp)), aspect='auto', origin='bottom', interpolation='none')
+    plt.show()
 
     ap, raw_ap = generate_timbre(1, ap_max, ap_min, condi, raw_sp)
 
@@ -167,6 +172,9 @@ def make_test_wav(file_name, isTestDir=True, flag="flag"):
     vuv = generate_vuv(condi, gen_cat)
     # plt.plot(vuv)
     # plt.show()
+
+    # filepath = os.path.join(RAW_DATA_PATH, file_name + '.wav')
+    # f0, _sp, code_sp, _ap, code_ap = process_wav(filepath)
 
     synthesized = pw.synthesize(f0*vuv, sp, ap, sample_rate, pw.default_frame_period)
     save_dir = os.path.join(GEN_PATH, flag)
@@ -180,9 +188,8 @@ def test_world(file_name):
 
     f0, _sp, code_sp, _ap, code_ap = process_wav(filepath)
 
-
-    synthesized = pw.synthesize(f0, _sp, _ap, sample_rate, pw.default_frame_period)
-    save_dir = os.path.join(GEN_PATH, flag)
+    synthesized = pw.synthesize(f0, decode_harmonic(code_sp, fft_size), pw.decode_aperiodicity(code_ap, 32000, fft_size), sample_rate, pw.default_frame_period)
+    save_dir = os.path.join(GEN_PATH, 'world_decode_origin')
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     sf.write(save_dir + '/' + file_name + '.wav', synthesized, sample_rate)

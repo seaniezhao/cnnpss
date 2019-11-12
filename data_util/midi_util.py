@@ -62,18 +62,24 @@ def preprocess_midi(midi_path):
     return note_list
 
 
-# 通过midi 随机选择填词
-def make_phn_from_midi(note_list):
-    pinyins =['wo', 'ai', 'zhong', 'guo', 'xiao', 'luo', 'hao']
+# 通过midi 填词
+def make_phn_from_midi(note_list, pinyins):
+    # 每个音一个词不够补"啦"
+    res = len(note_list) - len(pinyins)
+    if res > 0:
+        for x in range(res):
+            pinyins.append('la')
+
+
     time_phon_list = []
 
-    for note in note_list:
+    for i, note in enumerate(note_list):
         note_start = note[0]
         note_end = note[1]
         note_pitch = note[2]
         note_dur = note[3]
 
-        note_pinyin = random.choice(pinyins)
+        note_pinyin = pinyins[i]
         phones = get_phoneme(note_pinyin)
         if note_pitch == 0:
             phones = ['pau']

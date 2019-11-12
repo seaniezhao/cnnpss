@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import pickle
 import os
-
+from pypinyin import lazy_pinyin
 
 cdir = os.path.dirname(__file__)
 pkl_file = open(os.path.join(cdir, 'pinyin-phoneme.pkl'), 'rb')
@@ -19,6 +19,20 @@ def get_phoneme(pinyin):
         return phns
     else:
         return [pinyin]
+
+
+def get_pinyins(characters):
+    return_pinyins = []
+
+    try:
+        pinyins = lazy_pinyin(characters)
+        for pinyin in pinyins:
+            if pinyin in pp_dict:
+                return_pinyins.append(pinyin)
+    except Exception as e:
+        print(e)
+
+    return return_pinyins
 
 
 def Is_pinyin(pinyin):
@@ -49,6 +63,8 @@ def get_all_phon():
 
 
 if __name__ == '__main__':
-    print(get_phoneme('shei'))
+    #print(get_phoneme('shei'))
+    for i in get_pinyins('d爱仕达所ａｓｄasdads'):
+        print(i)
 
 

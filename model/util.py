@@ -114,7 +114,9 @@ def CGM_loss(out, y):
 
 
 def sample_from_CGM(out, temperature=0.01):
-
+    #todo test
+    temperature = 0.01
+    # ------
     out = out.unsqueeze(1)
     out = out.unsqueeze(0)
     sigmas, mus, ws = cal_para(out, temperature)
