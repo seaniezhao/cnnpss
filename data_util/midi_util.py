@@ -70,19 +70,21 @@ def make_phn_from_midi(note_list, pinyins):
         for x in range(res):
             pinyins.append('la')
 
-
     time_phon_list = []
 
-    for i, note in enumerate(note_list):
+    pinyin_index = 0
+    for note in note_list:
         note_start = note[0]
         note_end = note[1]
         note_pitch = note[2]
         note_dur = note[3]
 
-        note_pinyin = pinyins[i]
-        phones = get_phoneme(note_pinyin)
         if note_pitch == 0:
             phones = ['pau']
+        else:
+            note_pinyin = pinyins[pinyin_index]
+            pinyin_index += 1
+            phones = get_phoneme(note_pinyin)
 
         if len(phones) == 1:
             time_phon_list.append((note_start, note_end, phones[0]))
@@ -93,7 +95,7 @@ def make_phn_from_midi(note_list, pinyins):
                 rand = random.uniform(0.15, 0.4)
                 p_dur = int(note_dur * rand)
             else:
-                rand = random.gauss(20, 3)
+                rand = random.gauss(15, 3)
                 p_dur = np.clip(int(rand), 10, 30)
             time_phon_list.append((note_start, note_start + p_dur, phones[0]))
             time_phon_list.append((note_start + p_dur, note_end, phones[1]))
