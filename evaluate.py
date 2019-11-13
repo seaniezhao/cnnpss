@@ -24,7 +24,7 @@ def load_model(mtype, state_path):
         hparam = hparams.create_f0_hparams()
 
     model = WaveNetModel(hparam, device).to(device)
-    states = torch.load(state_path)
+    states = torch.load(state_path, map_location=device)
     model.load_state_dict(states['state_dict'])
 
     return model
