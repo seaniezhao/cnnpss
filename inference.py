@@ -42,7 +42,7 @@ class MachineSinger:
         sample = (raw_gen.transpose(0, 1).cpu().numpy().astype(np.double) + 0.5) * \
                  (self.ap_max - self.ap_min) + self.ap_min
 
-        decode_ap = pw.decode_spectral_envelope(sample, sample_rate, fft_size)
+        decode_ap = pw.decode_aperiodicity(sample, sample_rate, fft_size)
 
         return decode_ap, raw_gen
 
