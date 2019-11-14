@@ -8,10 +8,11 @@ f0_max = 1100.0
 f0_min = 50.0
 
 
+ROOT_PATH = './data'
 # ------------path config------------------
-RAW_DATA_PATH = '/home/sean/pythonProj/data/xiaolongnv_cnnpss/raw_piece'
-DATA_ROOT_PATH = '/home/sean/pythonProj/data/xiaolongnv_cnnpss/dataset/'
-GEN_PATH = '/home/sean/pythonProj/data/xiaolongnv_cnnpss/gen/'
+RAW_DATA_PATH = os.path.join(ROOT_PATH, 'raw_piece')
+DATA_ROOT_PATH = os.path.join(ROOT_PATH, 'dataset')
+GEN_PATH = os.path.join(ROOT_PATH, 'gen')
 
 
 # 测试数据集的目录
