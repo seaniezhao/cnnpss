@@ -21,7 +21,7 @@ def process_wav(wav_path):
     if osr != sr:
         y = librosa.resample(y, osr, sr)
 
-    sf.write(wav_path, y, sample_rate)
+    #sf.write(wav_path, y, sample_rate)
 
     # 使用dio算法计算音频的基频F0
     _f0, t = pw.dio(y, sr, f0_floor=f0_min, f0_ceil=f0_max,
