@@ -47,7 +47,7 @@ def get_phn_class(phn):
         return 0
     elif phn in ['k', 'p', 's', 'h', 't', 'j', 'c', 'b', 'z', 'm', 'g', 'l',
                  'd', 'ch', 'zh', 'x', 'q', 'sh', 'f', 'n', 'r', 'pl']:
-        return 1
+        return 0
     else:
         return 2
 

@@ -70,10 +70,13 @@ def tuning_postprocessing(note_list, time_phon_list, p_f0):
 
     # smooth
     filtered = gaussian_filter1d(predicted_f0, 1)
-    filtered_f0 = np.power(2, (filtered - 69) / 12) * 440
-    # plt.plot(filtered_f0)
-    # plt.show()
 
+    filtered_vuv = filtered > 0
+    midi_vuv = midi_f0 > 0
+    filtered_f0 = np.power(2, (filtered - 69) / 12) * 440
     midi_f0 = np.power(2, (midi_f0 - 69) / 12) * 440
+
+    filtered_f0 = filtered_f0 * filtered_vuv * midi_vuv
+    midi_f0 = midi_f0 * midi_vuv
 
     return filtered_f0, midi_f0
