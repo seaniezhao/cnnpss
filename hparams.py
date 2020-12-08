@@ -1,10 +1,9 @@
-import tensorflow as tf
-
+import json
 
 def create_harmonic_hparams(hparams_string=None, verbose=False):
     """Create model hyperparameters. Parse nondefault from given string."""
 
-    hparams = tf.contrib.training.HParams(
+    hparams = dict(
         type=0,
         layers=3,
         blocks=2,
@@ -20,20 +19,13 @@ def create_harmonic_hparams(hparams_string=None, verbose=False):
         bias=True
     )
 
-    if hparams_string:
-        tf.logging.info('Parsing harmonic hparams: %s', hparams_string)
-        hparams.parse(hparams_string)
-
-    if verbose:
-        tf.logging.info('Final harmonic hparams: %s', hparams.values())
-
-    return hparams
+    return dict2obj(hparams)
 
 
 def create_aperiodic_hparams( hparams_string=None, verbose=False):
     """Create model hyperparameters. Parse nondefault from given string."""
 
-    hparams = tf.contrib.training.HParams(
+    hparams = dict(
         type=1,
         layers=3,
         blocks=2,
@@ -49,20 +41,13 @@ def create_aperiodic_hparams( hparams_string=None, verbose=False):
         bias=True
     )
 
-    if hparams_string:
-        tf.logging.info('Parsing aperiodic hparams: %s', hparams_string)
-        hparams.parse(hparams_string)
-
-    if verbose:
-        tf.logging.info('Final aperiodic hparams: %s', hparams.values())
-
-    return hparams
+    return dict2obj(hparams)
 
 
 def create_vuv_hparams( hparams_string=None, verbose=False):
     """Create model hyperparameters. Parse nondefault from given string."""
 
-    hparams = tf.contrib.training.HParams(
+    hparams = dict(
         type=2,
         layers=3,
         blocks=2,
@@ -78,20 +63,13 @@ def create_vuv_hparams( hparams_string=None, verbose=False):
         bias=True
     )
 
-    if hparams_string:
-        tf.logging.info('Parsing vuv hparams: %s', hparams_string)
-        hparams.parse(hparams_string)
-
-    if verbose:
-        tf.logging.info('Final vuv hparams: %s', hparams.values())
-
-    return hparams
+    return dict2obj(hparams)
 
 
 def create_f0_hparams(hparams_string=None, verbose=False):
     """Create model hyperparameters. Parse nondefault from given string."""
 
-    hparams = tf.contrib.training.HParams(
+    hparams = dict(
         type=3,
         layers=7,
         blocks=2,
@@ -107,13 +85,18 @@ def create_f0_hparams(hparams_string=None, verbose=False):
         bias=True
     )
 
-    if hparams_string:
-        tf.logging.info('Parsing f0 hparams: %s', hparams_string)
-        hparams.parse(hparams_string)
-
-    if verbose:
-        tf.logging.info('f0 hparams: %s', hparams.values())
-
-    return hparams
+    return dict2obj(hparams)
 
 
+# declaringa a class
+class obj:
+
+    # constructor
+    def __init__(self, dict1):
+        self.__dict__.update(dict1)
+
+
+def dict2obj(dict1):
+    # using json.loads method and passing json.dumps
+    # method and custom object hook as arguments
+    return json.loads(json.dumps(dict1), object_hook=obj)

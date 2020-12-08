@@ -31,7 +31,7 @@ class MachineSinger:
         raw_gen = self.sp_model.generate(condition, None)
         sample = (raw_gen.transpose(0, 1).cpu().numpy().astype(np.double) + 0.5) * \
                  (self.sp_max - self.sp_min) + self.sp_min
-
+        sample = sample.copy(order='C')
         decode_sp = decode_harmonic(sample, fft_size)
 
         return decode_sp, raw_gen
@@ -87,5 +87,5 @@ class MachineSinger:
 
 if __name__ == '__main__':
     singer = MachineSinger()
-    singer.sing('/home/sean/pythonProj/data/xiaolongnv_cnnpss/raw_piece/3xiaohongmao3.mid', '')
+    singer.sing('/home/sean/pythonProj/data/xiaolongnv_cnnpss/raw_piece/3xiaohongmao3.mid', '嘲笑誰恃美揚威沒了心如何相配')
 

@@ -92,11 +92,11 @@ def make_phn_from_midi(note_list, pinyins):
             assert len(phones) == 2
             p_dur = 0
             if note_dur < 30:
-                rand = random.uniform(0.15, 0.4)
+                rand = random.uniform(0.05, 0.2)
                 p_dur = int(note_dur * rand)
             else:
-                rand = random.gauss(15, 3)
-                p_dur = np.clip(int(rand), 10, 30)
+                rand = random.gauss(10, 3)
+                p_dur = np.clip(int(rand), 5, 30)
             time_phon_list.append((note_start, note_start + p_dur, phones[0]))
             time_phon_list.append((note_start + p_dur, note_end, phones[1]))
 
