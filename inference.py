@@ -87,5 +87,5 @@ class MachineSinger:
 
 if __name__ == '__main__':
     singer = MachineSinger()
-    singer.sing('/home/sean/pythonProj/data/xiaolongnv_cnnpss/raw_piece/3xiaohongmao3.mid', '嘲笑誰恃美揚威沒了心如何相配')
+    singer.sing('./data/raw/3xiaohongmao1.mid', '我把糕点带给外婆尝一尝昂，他家住在又远又僻静的地方')
 

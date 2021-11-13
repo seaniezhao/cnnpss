@@ -33,7 +33,7 @@ def slience_pau(wav_path, txt_path):
 if __name__ == '__main__':
     # 功能:将原始的音频中标注为br和pau的部分静音
 
-    uncut_folder = '/home/sean/pythonProj/data/xiaolongnv_cnnpss/raw'
+    uncut_folder = './data/raw'
 
     supportedExtensions = '*.wav'
     for dirpath, dirs, files in os.walk(uncut_folder):

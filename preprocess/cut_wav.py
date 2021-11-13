@@ -146,12 +146,12 @@ if __name__ == '__main__':
     # 功能:将原始的音频以及标注切割成一句一句的音频以及标注,并且保留音频与标注的对应关系
 
     # 切割音频以及标注后存放位置
-    dist_folder = '/home/sean/pythonProj/data/xiaolongnv_cnnpss/raw_piece'
+    dist_folder = './data/raw_piece'
     if not os.path.exists(dist_folder):
         os.makedirs(dist_folder)
 
     # 原始音频以及标注存放位置
-    uncut_folder = '/home/sean/pythonProj/data/xiaolongnv_cnnpss/raw'
+    uncut_folder = './data/raw'
 
     supportedExtensions = '*.wav'
     for dirpath, dirs, files in os.walk(uncut_folder):
