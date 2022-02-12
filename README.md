@@ -3,4 +3,4 @@
 * pretrained models are provided in snapshots/
 * generated samples are in data/gen/ 
 * to try just run inference.py
-### this method is a bit outdated, just for learning
+### Non-Autoregressive see https://github.com/seaniezhao/torch-seq2seq-singing-synthesis
